@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import ElectionContext from '../../Context/Election Context/ElectionContext'
 import AlertContext from '../../Context/Alert Context/AlertContext'
 import UserContext from '../../Context/UserContext/UserContext';
+import VotingContext from '../../Context/Voting Context/VotingContext';
 
 function Election(props) {
 
@@ -9,16 +10,22 @@ function Election(props) {
     const { showAlert } = alertContext;
     const userContext = useContext(UserContext);
     const { user } = userContext;
-    const context = useContext(ElectionContext);
-    let { updateElection } = context;
+    const electionContext = useContext(ElectionContext);
+    const { updateElection } = electionContext;
+    const votingContext = useContext(VotingContext);
+    const { account } = votingContext;
 
     let voted = async (candidateId) => {
-        let success = await updateElection(props.election._id, candidateId, user._id);
-        if (success) {
-            showAlert('Vote added successfully', 'success');
-        }
-        if (!success) {
-            showAlert('Already Voted', 'danger');
+        if (account) {
+            let success = await updateElection(props.election._id, candidateId, user._id);
+            if (success) {
+                showAlert('Vote added successfully', 'success');
+            }
+            if (!success) {
+                showAlert('Already Voted', 'danger');
+            }
+        } else {
+            showAlert('Please Connect to your Metamask Wallet', 'danger');
         }
     }
 
