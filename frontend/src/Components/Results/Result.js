@@ -56,7 +56,7 @@ function Result(props) {
                             <div className="result-container">
                                 <div className="result-bar" style={{ width: `${allElections[props.election.electionID].votesPerCandidate[index] / allElections[props.election.electionID].votesCollected * 100}%` }}></div>
                             </div>
-                            <h6 className='result-value'>{allElections[props.election.electionID].votesPerCandidate[index] * 100}/{allElections[props.election.electionID].votesCollected * 100}</h6>
+                            <h6 className='result-value'>{allElections[props.election.electionID].votesPerCandidate[index] * 1000000000000000000}/{allElections[props.election.electionID].votesCollected * 1000000000000000000}</h6>
                         </div>)
                     })}
 
