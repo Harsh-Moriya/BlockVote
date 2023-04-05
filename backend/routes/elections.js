@@ -13,7 +13,7 @@ router.post('/addelection', [
     body('description', 'Description must be atleast 5 characters').isLength({ min: 5 }),
 ], async (req, res) => {
     try {
-        const { title, description, totalVotes, candidates } = req.body;
+        const { title, description, candidates } = req.body;
 
         // If there are errors, return Bad request and the errors
         const errors = validationResult(req);
@@ -21,8 +21,11 @@ router.post('/addelection', [
             return res.status(400).json({ errors: errors.array() });
         }
 
+        const elections = await Election.find();
+        const electionID = elections.length
+
         const election = new Election({
-            title, description, totalVotes, candidates
+            electionID, title, description, candidates
         })
         const savedElection = await election.save();
         res.json(savedElection)
@@ -46,15 +49,12 @@ router.get('/getelections', async (req, res) => {
 
 // ROUTE 3: Update an existing Election using: PUT "/api/elections/updateelection". Login required
 router.put('/updateelection/:id', fetchuser, async (req, res) => {
-    const { candidateId, voterId } = req.body;
+    const { voterId } = req.body;
     try {
 
         let success = false;
         let election = await Election.findById(req.params.id);
-        let candidates = election.candidates;
         let voters = election.voters;
-        let allVotes = 0;
-        let candidateIndex = Number(candidateId);
         let voted = voters.includes(voterId);
 
         if (!election) {
@@ -67,13 +67,8 @@ router.put('/updateelection/:id', fetchuser, async (req, res) => {
         }
 
         voters.push(voterId);
-        candidates[candidateIndex].votes += 1;
 
-        candidates.forEach(candidate => {
-            allVotes += candidate.votes;
-        });
-
-        election = await Election.findByIdAndUpdate(req.params.id, { candidates: candidates, totalVotes: allVotes, voters: voters }, { new: true })
+        election = await Election.findByIdAndUpdate(req.params.id, { voters: voters }, { new: true })
         success = true;
         res.json({ success, election });
 

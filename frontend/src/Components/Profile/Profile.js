@@ -14,10 +14,6 @@ function Profile(props) {
         connectWallet();
     }
 
-    const handleCheck = async () => {
-        console.log(account);
-    }
-
     useEffect(() => {
         getUser();
         // eslint-disable-next-line
@@ -26,7 +22,7 @@ function Profile(props) {
     return (
         <div className="profile">
             <div className="profile-panel">
-                <h2 className='title' onClick={handleCheck}>Profile</h2>
+                <h2 className='title'>Profile</h2>
                 <h3 className="name">Name: {user ? user.name : 'name'}</h3>
                 <h3 className="email">Email: {user ? user.email : 'email'}</h3>
                 <h3 className="collegeid">College ID: {user ? user.collegeID : 'collegeID'}</h3>

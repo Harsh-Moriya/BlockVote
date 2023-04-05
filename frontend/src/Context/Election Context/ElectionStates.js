@@ -21,14 +21,14 @@ const ElectionStates = (props) => {
     }
 
     // Add an Election
-    const addElection = async (title, description, totalVotes, candidates) => {
+    const addElection = async (title, description, candidates) => {
         // API Call 
         const response = await fetch(`${host}/api/elections/addelection`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, description, totalVotes, candidates })
+            body: JSON.stringify({ title, description, candidates })
         });
 
         const election = await response.json();
@@ -36,7 +36,7 @@ const ElectionStates = (props) => {
     }
 
     // Edit a Election
-    const updateElection = async (electionId, candidateId, voterId) => {
+    const updateElection = async (electionId, voterId) => {
         // API Call 
         const response = await fetch(`${host}/api/elections/updateelection/${electionId}`, {
             method: 'PUT',
@@ -44,7 +44,7 @@ const ElectionStates = (props) => {
                 'Content-Type': 'application/json',
                 "auth-token": localStorage.getItem('token')
             },
-            body: JSON.stringify({ candidateId, voterId })
+            body: JSON.stringify({ voterId })
         });
         const json = await response.json();
 

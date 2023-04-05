@@ -32,21 +32,14 @@ function Navbar(props) {
     // eslint-disable-next-line
   })
 
+  const isConnected = ()=>{
+    showAlert('Please Connect to your Metamask Wallet', 'danger');
+  }
+
   let menu = (e) => {
     let navUlClass = document.querySelector('.nav-ul').classList;
     navUlClass.toggle('ul-visible');
   }
-
-  //   let toggleMode = ()=>{
-  //     let mode = document.getElementById('mode').classList;
-  //     if(mode.contains('fa-sun')){
-  //       mode.remove('fa-sun');
-  //       mode.add('fa-moon')
-  //     } else {
-  //       mode.remove('fa-moon');
-  //       mode.add('fa-sun')
-  //     }
-  // }
 
   return (
     <nav className="navbar">
@@ -56,10 +49,7 @@ function Navbar(props) {
       </h2>
       <ul className='nav-ul'>
         {props.logged ? <li><Link to="/elections">Elections</Link></li> : <li><Link to="/">Login</Link></li>}
-        {props.logged ? <li><Link to="/results">Results</Link></li> : <li><Link to="/register">Create Account</Link></li>}
-        {/* <li>
-            <i className="fa-solid fa-sun" id='mode' onClick={toggleMode}></i>
-          </li> */}
+        {props.logged ? (account ? <li><Link to="/results">Results</Link></li> : <li><Link to="/elections" onClick={isConnected}>Results</Link></li>) : <li><Link to="/register">Create Account</Link></li>}
       </ul>
     </nav>
   )

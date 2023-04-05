@@ -5,8 +5,8 @@ import AlertContext from '../../Context/Alert Context/AlertContext'
 
 function ElectionPanel() {
 
-    const context = useContext(ElectionContext);
-    let { elections, getElection, setElections } = context;
+    const electionContext = useContext(ElectionContext);
+    let { elections, getElection, setElections } = electionContext;
     const alertContext = useContext(AlertContext);
     const { showAlert } = alertContext;
 

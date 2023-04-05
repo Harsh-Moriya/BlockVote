@@ -2,46 +2,49 @@ import React, { useContext, useEffect } from 'react'
 import Navbar from '../Navbar/Navbar';
 import ElectionContext from '../../Context/Election Context/ElectionContext'
 import { useNavigate } from 'react-router-dom';
+import VotingContext from '../../Context/Voting Context/VotingContext';
 
 function CreateElection() {
 
+    const electionContext = useContext(ElectionContext);
+    const { addElection } = electionContext;
+    const votingContext = useContext(VotingContext);
+    const { voting, account } = votingContext;
     const navigate = useNavigate();
     useEffect(() => {
         if (!localStorage.getItem('token')) {
             navigate('/')
         }
+        if (!account) {
+            navigate('/elections')
+        }
         // eslint-disable-next-line
     }, [])
 
-    const context = useContext(ElectionContext);
-    let { addElection } = context;
-
-    let pushElection = (e) => {
+    let pushElection = async (e) => {
         e.preventDefault()
         const title = document.querySelector('.new-election-title').value;
         const electionDescription = document.querySelector('.new-election-desc').value;
-        const totalVotes = 0;
         const candidateElements = document.querySelectorAll('.new-candidate');
         const candidates = [];
 
         class Candidate {
-            constructor(index, name, description, votes) {
+            constructor(index, name, description) {
                 this.index = index;
                 this.name = name;
                 this.description = description;
-                this.votes = votes;
             }
         }
 
         candidateElements.forEach((element, index) => {
             const name = element.querySelector('.new-candidate-in').value;
             const description = element.querySelector('.new-candidate-desc').value;
-            const votes = 0;
-            const candidate = new Candidate(index, name, description, votes);
+            const candidate = new Candidate(index, name, description);
             candidates.push(candidate);
         })
 
-        addElection(title, electionDescription, totalVotes, candidates);
+        await voting.contract.createElection(account[0], title, electionDescription, candidates.length);
+        addElection(title, electionDescription, candidates);
         navigate('/elections')
     }
 

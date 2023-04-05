@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const ElectionSchema = new Schema({
+    electionID: {
+        type: Number,
+        required: true,
+    },
     title: {
         type: String,
         required: true,
     },
     description: {
         type: String,
-        required: true,
-    },
-    totalVotes: {
-        type: Number,
         required: true,
     },
     candidates: {

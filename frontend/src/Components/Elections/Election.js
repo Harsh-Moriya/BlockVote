@@ -17,7 +17,7 @@ function Election(props) {
 
     let voted = async (candidateId) => {
         if (account) {
-            let success = await updateElection(props.election._id, candidateId, user._id);
+            let success = await updateElection(props.election._id, user._id);
             if (success) {
                 showAlert('Vote added successfully', 'success');
             }

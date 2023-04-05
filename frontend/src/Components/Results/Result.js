@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import VotingContext from '../../Context/Voting Context/VotingContext';
 
 function Result(props) {
+
+    const votingContext = useContext(VotingContext);
+    const { allElections } = votingContext;
+
+    // const logElections = ()=>{
+    //     if (allElections) {
+    //         console.log(allElections[props.election.electionID]);
+    //     } else {
+    //         console.log('error');
+    //     }
+    // }
+
 
     let resultDown = (e) => {
         if (e.target.classList.contains('result-expand')) {
@@ -37,14 +50,14 @@ function Result(props) {
                 <p className="result-description">Description:- {props.election.description}</p>
                 <div className="candidate-result-container">
 
-                    {props.election.candidates && props.election.candidates.length > 0 && props.election.candidates.map((candidate) => {
+                    {allElections && props.election.candidates && props.election.candidates.length > 0 && props.election.candidates.map((candidate, index) => {
                         return (<div className="candidate-result" key={candidate.index}>
-                                    <h5 className='candidate-result-name'>{candidate.name}</h5>
-                                    <div className="result-container">
-                                        <div className="result-bar" style={{ width: `${candidate.votes/props.election.totalVotes * 100}%` }}></div>
-                                    </div>
-                                    <h6 className='result-value'>{candidate.votes}/{props.election.totalVotes}</h6>
-                                </div>)
+                            <h5 className='candidate-result-name'>{candidate.name}</h5>
+                            <div className="result-container">
+                                <div className="result-bar" style={{ width: `${allElections[props.election.electionID].votesPerCandidate[index] / allElections[props.election.electionID].votesCollected * 100}%` }}></div>
+                            </div>
+                            <h6 className='result-value'>{allElections[props.election.electionID].votesPerCandidate[index] * 100}/{allElections[props.election.electionID].votesCollected * 100}</h6>
+                        </div>)
                     })}
 
                 </div>

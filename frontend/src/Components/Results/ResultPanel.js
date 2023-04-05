@@ -1,14 +1,18 @@
 import React, { useContext, useEffect } from 'react'
 import Result from './Result'
 import ElectionContext from '../../Context/Election Context/ElectionContext'
+import VotingContext from '../../Context/Voting Context/VotingContext';
 
 function ResultPanel() {
 
-    const context = useContext(ElectionContext);
-    let { elections, getElection, setElections } = context;
+    const electionContext = useContext(ElectionContext);
+    let { elections, getElection, setElections } = electionContext;
+    const votingContext = useContext(VotingContext);
+    const { allElections, fetchETHElections } = votingContext;
 
     useEffect(() => {
         getElection();
+        fetchETHElections();
         // eslint-disable-next-line
     }, [])
 
@@ -34,7 +38,7 @@ function ResultPanel() {
             </div>
             {/* <h2 className='results-title'>All results</h2> */}
             <div className="all-result-container">
-                {elections && elections.length > 0 && elections.map(election => {
+                {allElections && elections && elections.length > 0 && elections.map((election) => {
                     return <Result election={election} key={election._id} />
                 })}
             </div>

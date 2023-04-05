@@ -5,14 +5,15 @@ import ABI from '../../Contract/Voting.json';
 
 const VotingStates = (props) => {
 
-    const contractAddress = "0xd9Bdd719eeA3B5FE5306fC0467cC0547D007B811";
+    const contractAddress = "";
     const contractABI = ABI.abi;
     const [voting, setVoting] = useState({
         provider: null,
         signer: null,
         contract: null
     })
-    const [account, setAccount] = useState(null)
+    const [account, setAccount] = useState(null);
+    const [allElections, setAllElections] = useState(null)
 
     const connectWallet = async () => {
 
@@ -35,8 +36,30 @@ const VotingStates = (props) => {
         }
     }
 
+    const fetchETHElections = async () => {
+
+        let allElections = await voting.contract.getElections();
+        let allCandidates = [];
+
+        allElections.forEach((election)=>{
+            let candidates = election.votesPerCandidate.map((value)=>{
+                return ethers.utils.formatEther(value.toString())
+            })
+            allCandidates.push(candidates);
+        })
+        
+        let parsedElections = allElections.map((election, index) => ({
+            title: election.title,
+            description: election.description,
+            votesCollected: ethers.utils.formatEther(election.votesCollected.toString()),
+            votesPerCandidate: allCandidates[index],
+        }))
+
+        setAllElections(parsedElections);
+    }
+
     return (
-        <Context.Provider value={{ voting, setVoting, account, setAccount, connectWallet }}>
+        <Context.Provider value={{ voting, setVoting, account, setAccount, allElections, setAllElections, connectWallet, fetchETHElections }}>
             {props.children}
         </Context.Provider>
     )
