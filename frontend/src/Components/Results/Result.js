@@ -4,11 +4,11 @@ import VotingContext from '../../Context/Voting Context/VotingContext';
 function Result(props) {
 
     const votingContext = useContext(VotingContext);
-    const { allElections } = votingContext;
+    const { ETHElections } = votingContext;
 
     // const logElections = ()=>{
-    //     if (allElections) {
-    //         console.log(allElections[props.election.electionID]);
+    //     if (ETHElections) {
+    //         console.log(ETHElections[props.election.electionID]);
     //     } else {
     //         console.log('error');
     //     }
@@ -50,13 +50,13 @@ function Result(props) {
                 <p className="result-description">Description:- {props.election.description}</p>
                 <div className="candidate-result-container">
 
-                    {allElections && props.election.candidates && props.election.candidates.length > 0 && props.election.candidates.map((candidate, index) => {
+                    {ETHElections && props.election.candidates && props.election.candidates.length > 0 && props.election.candidates.map((candidate, index) => {
                         return (<div className="candidate-result" key={candidate.index}>
                             <h5 className='candidate-result-name'>{candidate.name}</h5>
                             <div className="result-container">
-                                <div className="result-bar" style={{ width: `${allElections[props.election.electionID].votesPerCandidate[index] / allElections[props.election.electionID].votesCollected * 100}%` }}></div>
+                                <div className="result-bar" style={{ width: `${ETHElections[props.election.electionID].votesPerCandidate[index] / ETHElections[props.election.electionID].votesCollected * 100}%` }}></div>
                             </div>
-                            <h6 className='result-value'>{allElections[props.election.electionID].votesPerCandidate[index] * 1000000000000000000}/{allElections[props.election.electionID].votesCollected * 1000000000000000000}</h6>
+                            <h6 className='result-value'>{ETHElections[props.election.electionID].votesPerCandidate[index]}/{ETHElections[props.election.electionID].votesCollected}</h6>
                         </div>)
                     })}
 

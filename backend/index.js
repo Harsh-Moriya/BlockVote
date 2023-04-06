@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const PORT = process.env.PORT || 6001;
-const port = 5000;
 const dotenv = require('dotenv');
 const cors = require('cors');
 
 const app = express()
 dotenv.config();
+
+const PORT = process.env.PORT || 6001;
 
 app.use(cors());
 app.use(express.json());
@@ -14,16 +14,12 @@ app.use(express.json());
 mongoose.connect(process.env.URI, {
     useNewUrlParser: true, useUnifiedTopology: true
 }).then(()=>{
-    app.listen(PORT, ()=> console.log(`Server connected to ${PORT}`));
+    console.log('Server Connected');
 }).catch((err)=> console.log(`${err} did not connect`))
-
-// app.get('/', (req, res) => {
-//     res.send('hello world')
-// })
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/elections', require('./routes/elections'));
 
-app.listen(port, ()=>{
-    console.log(`listening on ${port}`);
+app.listen(PORT, ()=>{
+    console.log(`listening on ${PORT}`);
 })

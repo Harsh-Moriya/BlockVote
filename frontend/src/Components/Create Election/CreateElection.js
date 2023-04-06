@@ -1,8 +1,10 @@
 import React, { useContext, useEffect } from 'react'
 import Navbar from '../Navbar/Navbar';
+import Alert from '../Alert/Alert'
 import ElectionContext from '../../Context/Election Context/ElectionContext'
 import { useNavigate } from 'react-router-dom';
 import VotingContext from '../../Context/Voting Context/VotingContext';
+import AlertContext from '../../Context/Alert Context/AlertContext'
 
 function CreateElection() {
 
@@ -10,7 +12,10 @@ function CreateElection() {
     const { addElection } = electionContext;
     const votingContext = useContext(VotingContext);
     const { voting, account } = votingContext;
+    const alertContext = useContext(AlertContext);
+    const { alert, showAlert, transaction } = alertContext;
     const navigate = useNavigate();
+
     useEffect(() => {
         if (!localStorage.getItem('token')) {
             navigate('/')
@@ -22,30 +27,40 @@ function CreateElection() {
     }, [])
 
     let pushElection = async (e) => {
+
         e.preventDefault()
-        const title = document.querySelector('.new-election-title').value;
-        const electionDescription = document.querySelector('.new-election-desc').value;
-        const candidateElements = document.querySelectorAll('.new-candidate');
-        const candidates = [];
 
-        class Candidate {
-            constructor(index, name, description) {
-                this.index = index;
-                this.name = name;
-                this.description = description;
+        if (account) {
+
+            transaction('Creating Election... Please Wait', 'success', false);
+            const title = document.querySelector('.new-election-title').value;
+            const electionDescription = document.querySelector('.new-election-desc').value;
+            const candidateElements = document.querySelectorAll('.new-candidate');
+            const candidates = [];
+
+            class Candidate {
+                constructor(index, name, description) {
+                    this.index = index;
+                    this.name = name;
+                    this.description = description;
+                }
             }
+
+            candidateElements.forEach((element, index) => {
+                const name = element.querySelector('.new-candidate-in').value;
+                const description = element.querySelector('.new-candidate-desc').value;
+                const candidate = new Candidate(index, name, description);
+                candidates.push(candidate);
+            })
+
+            await voting.contract.createElection(account[0], title, electionDescription, candidates.length);
+            addElection(title, electionDescription, candidates);
+            navigate('/elections')
+            transaction('New Election Created', 'success', true);
+
+        } else {
+            showAlert('Please connect to your Metamask wallet', 'danger');
         }
-
-        candidateElements.forEach((element, index) => {
-            const name = element.querySelector('.new-candidate-in').value;
-            const description = element.querySelector('.new-candidate-desc').value;
-            const candidate = new Candidate(index, name, description);
-            candidates.push(candidate);
-        })
-
-        await voting.contract.createElection(account[0], title, electionDescription, candidates.length);
-        addElection(title, electionDescription, candidates);
-        navigate('/elections')
     }
 
     let candidateAdder = () => {
@@ -58,8 +73,8 @@ function CreateElection() {
             if (candidates.length === 0) {
                 let newCandidate = `<div class="new-candidate">
                                         <p class='new-candidate-title'>Candidate ${i}</p>
-                                        <input class='new-candidate-in' type="text" placeholder='Enter Name' />
-                                        <textarea class='new-candidate-desc' placeholder='Enter Candidate Description'></textarea>
+                                        <input class='new-candidate-in' type="text" placeholder='Enter Name' required />
+                                        <textarea class='new-candidate-desc' placeholder='Enter Candidate Description' required ></textarea>
                                     </div>`
                 candidatesContainer.innerHTML += newCandidate;
             }
@@ -70,16 +85,17 @@ function CreateElection() {
     return (
         <>
             <Navbar logged={true} />
+            <Alert alert={alert} />
             <div className=' creation'>
                 <form className="creation-panel" onSubmit={pushElection}>
                     <h2>Create New Election</h2>
                     <div className="separator"></div>
                     <h4>Title</h4>
-                    <textarea className='new-election-title' placeholder='Enter Election Title'></textarea>
+                    <textarea className='new-election-title' placeholder='Enter Election Title' required ></textarea>
                     <h4>Description</h4>
-                    <textarea className='new-election-desc' placeholder='Enter Election Description'></textarea>
+                    <textarea className='new-election-desc' placeholder='Enter Election Description' required ></textarea>
                     <h4>Candidates</h4>
-                    <input id="no-of-candidates" placeholder='1' type="number" min="1" max="8" />
+                    <input id="no-of-candidates" placeholder='1' type="number" min="1" max="8" required />
                     <div className="add-candidate" onClick={candidateAdder}>
                         <i className="fa-solid fa-plus"></i>
                     </div>

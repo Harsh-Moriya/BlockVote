@@ -13,7 +13,7 @@ const VotingStates = (props) => {
         contract: null
     })
     const [account, setAccount] = useState(null);
-    const [allElections, setAllElections] = useState(null)
+    const [ETHElections, setETHElections] = useState(null)
 
     const connectWallet = async () => {
 
@@ -38,28 +38,29 @@ const VotingStates = (props) => {
 
     const fetchETHElections = async () => {
 
-        let allElections = await voting.contract.getElections();
+        setETHElections(null)
+        let ETHElections = await voting.contract.getElections();
         let allCandidates = [];
 
-        allElections.forEach((election)=>{
+        ETHElections.forEach((election)=>{
             let candidates = election.votesPerCandidate.map((value)=>{
-                return ethers.utils.formatEther(value.toString())
+                return (ethers.utils.formatEther(value.toString()) * Math.pow(10,18))
             })
             allCandidates.push(candidates);
         })
         
-        let parsedElections = allElections.map((election, index) => ({
+        let parsedElections = ETHElections.map((election, index) => ({
             title: election.title,
             description: election.description,
-            votesCollected: ethers.utils.formatEther(election.votesCollected.toString()),
+            votesCollected: (ethers.utils.formatEther(election.votesCollected.toString()) * Math.pow(10,18)),
             votesPerCandidate: allCandidates[index],
         }))
 
-        setAllElections(parsedElections);
+        setETHElections(parsedElections);
     }
 
     return (
-        <Context.Provider value={{ voting, setVoting, account, setAccount, allElections, setAllElections, connectWallet, fetchETHElections }}>
+        <Context.Provider value={{ voting, setVoting, account, setAccount, ETHElections, setETHElections, connectWallet, fetchETHElections }}>
             {props.children}
         </Context.Provider>
     )

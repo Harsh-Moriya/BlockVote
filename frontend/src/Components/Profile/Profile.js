@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import UserContext from '../../Context/UserContext/UserContext';
 import VotingContext from '../../Context/Voting Context/VotingContext';
+import AlertContext from '../../Context/Alert Context/AlertContext'
 
 function Profile(props) {
 
@@ -9,9 +10,13 @@ function Profile(props) {
     const { user, getUser } = userContext;
     const votingContext = useContext(VotingContext);
     const { account, connectWallet } = votingContext;
+    const alertContext = useContext(AlertContext);
+    const { transaction } = alertContext;
 
-    const handleConnect = () => {
-        connectWallet();
+    const handleConnect = async () => {
+        transaction('Connecting to Metamask wallet... Please Wait', 'success', false);
+        await connectWallet();
+        transaction('Connected to Metamask wallet', 'success', true);
     }
 
     useEffect(() => {

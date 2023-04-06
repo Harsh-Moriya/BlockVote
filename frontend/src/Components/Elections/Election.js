@@ -8,24 +8,24 @@ import { ethers } from 'ethers';
 function Election(props) {
 
     const alertContext = useContext(AlertContext);
-    const { showAlert, voteTransaction } = alertContext;
+    const { showAlert, transaction } = alertContext;
     const userContext = useContext(UserContext);
     const { user } = userContext;
     const electionContext = useContext(ElectionContext);
     const { updateElection } = electionContext;
     const votingContext = useContext(VotingContext);
-    const { account, voting } = votingContext;
+    const { account, voting, fetchETHElections } = votingContext;
 
     let voted = async (candidateId) => {
-        // voteTransaction('Processing', 'success', false);
-        // voteTransaction('Processed', 'success', true);
+
         if (account) {
             let success = await updateElection(props.election._id, user._id);
             if (success) {
-                voteTransaction('Processing', 'success', false);
-                const amount = {value: ethers.utils.parseEther("0.001")};
+                transaction('Vote Transaction in Progress... Please Wait', 'success', false);
+                const amount = { value: ethers.utils.parseEther("0.001") };
                 await voting.contract.voteToElection(props.election.electionID, candidateId, amount);
-                voteTransaction('Vote added successfully', 'success', true);
+                await fetchETHElections();
+                transaction('Vote added successfully', 'success', true);
             }
             if (!success) {
                 showAlert('Already Voted', 'danger');
@@ -33,6 +33,7 @@ function Election(props) {
         } else {
             showAlert('Please Connect to your Metamask Wallet', 'danger');
         }
+
     }
 
     let electionDown = (e) => {

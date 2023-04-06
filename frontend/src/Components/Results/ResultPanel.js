@@ -8,7 +8,7 @@ function ResultPanel() {
     const electionContext = useContext(ElectionContext);
     let { elections, getElection, setElections } = electionContext;
     const votingContext = useContext(VotingContext);
-    const { allElections, fetchETHElections } = votingContext;
+    const { ETHElections, fetchETHElections } = votingContext;
 
     useEffect(() => {
         getElection();
@@ -38,7 +38,7 @@ function ResultPanel() {
             </div>
             {/* <h2 className='results-title'>All results</h2> */}
             <div className="all-result-container">
-                {allElections && elections && elections.length > 0 && elections.map((election) => {
+                {ETHElections && elections && elections.length > 0 && elections.map((election) => {
                     return <Result election={election} key={election._id} />
                 })}
             </div>

@@ -16,7 +16,7 @@ function Navbar(props) {
       if (account) {
         const accounts = await voting.provider.listAccounts()
         if (accounts.length === 0) {
-          showAlert('Wallet Disconnected', 'danger');
+          showAlert('Metamask Wallet Disconnected', 'danger');
           setAccount(null);
           if (localStorage.getItem('token')) {
             navigate('/elections');
