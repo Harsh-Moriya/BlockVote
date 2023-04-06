@@ -53,10 +53,16 @@ function CreateElection() {
                 candidates.push(candidate);
             })
 
-            await voting.contract.createElection(account[0], title, electionDescription, candidates.length);
-            addElection(title, electionDescription, candidates);
-            navigate('/elections')
-            transaction('New Election Created', 'success', true);
+            await voting.contract.createElection(account[0], title, electionDescription, candidates.length).then(() => {
+                addElection(title, electionDescription, candidates);
+                navigate('/elections')
+                transaction('New Election Created', 'success', true);
+            }).catch((err)=>{
+                transaction('Transaction Refused', 'danger', true);
+            })
+            // addElection(title, electionDescription, candidates);
+            // navigate('/elections')
+            // transaction('New Election Created', 'success', true);
 
         } else {
             showAlert('Please connect to your Metamask wallet', 'danger');

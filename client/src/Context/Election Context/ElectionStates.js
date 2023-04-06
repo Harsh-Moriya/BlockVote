@@ -51,6 +51,22 @@ const ElectionStates = (props) => {
         return json.success;
     }
 
+    // Remove a Voter from Election
+    const removeVoter = async (electionId, voterId) => {
+        // API Call 
+        const response = await fetch(`${host}/api/elections/removevoter/${electionId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": localStorage.getItem('token')
+            },
+            body: JSON.stringify({ voterId })
+        });
+        const json = await response.json();
+
+        return json.success;
+    }
+
     // Delete a election
     // const deleteElection = async (id) => {
     //     // API Call
@@ -66,7 +82,7 @@ const ElectionStates = (props) => {
     // }
 
     return (
-        <Context.Provider value={{ elections, setElections, getElection, addElection, updateElection }}>
+        <Context.Provider value={{ elections, setElections, getElection, addElection, updateElection, removeVoter }}>
             {props.children}
         </Context.Provider>
     )

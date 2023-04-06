@@ -12,9 +12,9 @@ function Election(props) {
     const userContext = useContext(UserContext);
     const { user } = userContext;
     const electionContext = useContext(ElectionContext);
-    const { updateElection } = electionContext;
+    const { updateElection, removeVoter } = electionContext;
     const votingContext = useContext(VotingContext);
-    const { account, voting, fetchETHElections } = votingContext;
+    const { account, voting } = votingContext;
 
     let voted = async (candidateId) => {
 
@@ -23,9 +23,12 @@ function Election(props) {
             if (success) {
                 transaction('Vote Transaction in Progress... Please Wait', 'success', false);
                 const amount = { value: ethers.utils.parseEther("0.001") };
-                await voting.contract.voteToElection(props.election.electionID, candidateId, amount);
-                await fetchETHElections();
-                transaction('Vote added successfully', 'success', true);
+                await voting.contract.voteToElection(props.election.electionID, candidateId, amount).then(()=>{
+                    transaction('Vote added successfully', 'success', true);
+                }).catch(async (err)=>{
+                    transaction('Transaction Rejected', 'danger', true);
+                    await removeVoter(props.election._id, user._id);
+                })
             }
             if (!success) {
                 showAlert('Already Voted', 'danger');

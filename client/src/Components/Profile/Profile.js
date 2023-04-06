@@ -15,8 +15,16 @@ function Profile(props) {
 
     const handleConnect = async () => {
         transaction('Connecting to Metamask wallet... Please Wait', 'success', false);
-        await connectWallet();
-        transaction('Connected to Metamask wallet', 'success', true);
+        let connection = await connectWallet()
+        if (connection.success) {
+            if (!connection.refused) {
+                transaction('Connected to Metamask wallet', 'success', true);
+            } else {
+                transaction('Connection Refused', 'danger', true);
+            }
+        } else {
+            transaction('Please Install Metamask wallet', 'danger', true);
+        }
     }
 
     useEffect(() => {

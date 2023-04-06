@@ -50,7 +50,7 @@ function Result(props) {
                 <p className="result-description">Description:- {props.election.description}</p>
                 <div className="candidate-result-container">
 
-                    {ETHElections && props.election.candidates && props.election.candidates.length > 0 && props.election.candidates.map((candidate, index) => {
+                    {ETHElections[props.election.electionID] && props.election.candidates && props.election.candidates.length > 0 && props.election.candidates.map((candidate, index) => {
                         return (<div className="candidate-result" key={candidate.index}>
                             <h5 className='candidate-result-name'>{candidate.name}</h5>
                             <div className="result-container">

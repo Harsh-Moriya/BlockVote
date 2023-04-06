@@ -5,7 +5,7 @@ import ABI from '../../Contract/Voting.json';
 
 const VotingStates = (props) => {
 
-    const contractAddress = "";
+    const contractAddress = "0xd9Bdd719eeA3B5FE5306fC0467cC0547D007B811";
     const contractABI = ABI.abi;
     const [voting, setVoting] = useState({
         provider: null,
@@ -17,19 +17,28 @@ const VotingStates = (props) => {
 
     const connectWallet = async () => {
 
+        let success = false;
+        let refused = false;
         try {
 
             const { ethereum } = window;
 
             if (ethereum) {
-                const account = await ethereum.request({ method: "eth_requestAccounts", });
+                const account = await ethereum.request({ method: "eth_requestAccounts", }).catch((err) => {
+                    refused = true;
+                })
                 setAccount(account);
+            } else {
+                success = false;
+                return success;
             }
 
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const contract = new ethers.Contract(contractAddress, contractABI, signer);
             setVoting({ provider, signer, contract });
+            success = true;
+            return { success, refused };
 
         } catch (error) {
             console.log(error);
@@ -42,17 +51,17 @@ const VotingStates = (props) => {
         let ETHElections = await voting.contract.getElections();
         let allCandidates = [];
 
-        ETHElections.forEach((election)=>{
-            let candidates = election.votesPerCandidate.map((value)=>{
-                return (ethers.utils.formatEther(value.toString()) * Math.pow(10,18))
+        ETHElections.forEach((election) => {
+            let candidates = election.votesPerCandidate.map((value) => {
+                return (ethers.utils.formatEther(value.toString()) * Math.pow(10, 18))
             })
             allCandidates.push(candidates);
         })
-        
+
         let parsedElections = ETHElections.map((election, index) => ({
             title: election.title,
             description: election.description,
-            votesCollected: (ethers.utils.formatEther(election.votesCollected.toString()) * Math.pow(10,18)),
+            votesCollected: (ethers.utils.formatEther(election.votesCollected.toString()) * Math.pow(10, 18)),
             votesPerCandidate: allCandidates[index],
         }))
 

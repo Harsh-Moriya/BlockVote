@@ -93,4 +93,32 @@ router.delete('/deleteelection/:id', async (req, res) => {
     }
 })
 
+// ROUTE 5: Remove Voter from Election using: PUT "/api/elections/removevoter". Login required
+router.put('/removevoter/:id', fetchuser, async (req, res) => {
+    const { voterId } = req.body;
+    try {
+
+        let success = false;
+        let election = await Election.findById(req.params.id);
+        let voters = election.voters;
+
+        if (!election) {
+            success = false;
+            return res.status(404).send("Not Found")
+        }
+
+        let newVoters = voters.filter((voter)=>{
+            return voter !== voterId
+        })
+
+        election = await Election.findByIdAndUpdate(req.params.id, { voters: newVoters }, { new: true })
+        success = true;
+        res.json({ success, election });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
 module.exports = router;
