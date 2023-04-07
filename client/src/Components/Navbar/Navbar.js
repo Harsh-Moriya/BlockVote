@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import VotingContext from '../../Context/Voting Context/VotingContext';
 import AlertContext from '../../Context/Alert Context/AlertContext';
+import UserContext from '../../Context/UserContext/UserContext';
 
 function Navbar(props) {
 
@@ -9,31 +10,46 @@ function Navbar(props) {
   const { voting, account, setAccount } = votingContext;
   const alertContext = useContext(AlertContext);
   const { showAlert } = alertContext;
+  const userContext = useContext(UserContext);
+  const { verify } = userContext;
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', async () => {
-      if (account) {
-        const accounts = await voting.provider.listAccounts()
-        if (accounts.length === 0) {
-          showAlert('Metamask Wallet Disconnected', 'danger');
-          setAccount(null);
-          if (localStorage.getItem('token')) {
-            navigate('/elections');
-          } else {
-            navigate('/');
-          }
-        } else {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', async () => {
+        if (account) {
           const accounts = await voting.provider.listAccounts()
-          setAccount(accounts);
+          if (accounts.length === 0) {
+            showAlert('Metamask Wallet Disconnected', 'danger');
+            setAccount(null);
+            if (localStorage.getItem('token')) {
+              navigate('/elections');
+              window.location.reload()
+            } else {
+              navigate('/');
+              window.location.reload()
+            }
+          } else {
+            const accounts = await voting.provider.listAccounts()
+            setAccount(accounts);
+          }
         }
-      }
-    })
+      })
+    }
     // eslint-disable-next-line
   })
 
-  const isConnected = ()=>{
-    showAlert('Please Connect to your Metamask Wallet', 'danger');
+  const isConnected = async () => {
+    if (account) {
+      let success = await verify();
+      if (success) {
+        navigate('/results');
+      } else {
+        showAlert('Please Connect to your own Metamask account', 'danger');
+      }
+    } else {
+      showAlert('Please Connect to your Metamask Wallet', 'danger');
+    }
   }
 
   let menu = (e) => {
@@ -49,7 +65,7 @@ function Navbar(props) {
       </h2>
       <ul className='nav-ul'>
         {props.logged ? <li><Link to="/elections">Elections</Link></li> : <li><Link to="/">Login</Link></li>}
-        {props.logged ? (account ? <li><Link to="/results">Results</Link></li> : <li><Link to="/elections" onClick={isConnected}>Results</Link></li>) : <li><Link to="/register">Create Account</Link></li>}
+        {props.logged ? <li><Link to="/elections" onClick={isConnected}>Results</Link></li> : <li><Link to="/register">Create Account</Link></li>}
       </ul>
     </nav>
   )

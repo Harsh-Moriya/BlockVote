@@ -16,15 +16,19 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let json = await userLogin();
-    if(json.success) {
-      localStorage.setItem('token', json.authtoken);
-      showAlert('logged in', 'success')
-      navigate("/elections");
+    if (window.ethereum) {
+      let json = await userLogin();
+      if (json.success) {
+        localStorage.setItem('token', json.authtoken);
+        showAlert('logged in', 'success')
+        navigate("/elections");
+      } else {
+        showAlert('Invalid Credentials', 'danger')
+      }
     } else {
-      showAlert('Invalid Credentials', 'danger')
+      showAlert('Please install Metamask wallet', 'danger')
     }
-    
+
   }
 
   const onChange = (e) => {

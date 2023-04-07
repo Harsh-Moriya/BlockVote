@@ -10,7 +10,7 @@ function Election(props) {
     const alertContext = useContext(AlertContext);
     const { showAlert, transaction } = alertContext;
     const userContext = useContext(UserContext);
-    const { user } = userContext;
+    const { user, verify } = userContext;
     const electionContext = useContext(ElectionContext);
     const { updateElection, removeVoter } = electionContext;
     const votingContext = useContext(VotingContext);
@@ -19,19 +19,24 @@ function Election(props) {
     let voted = async (candidateId) => {
 
         if (account) {
-            let success = await updateElection(props.election._id, user._id);
-            if (success) {
-                transaction('Vote Transaction in Progress... Please Wait', 'success', false);
-                const amount = { value: ethers.utils.parseEther("0.001") };
-                await voting.contract.voteToElection(props.election.electionID, candidateId, amount).then(()=>{
-                    transaction('Vote added successfully', 'success', true);
-                }).catch(async (err)=>{
-                    transaction('Transaction Rejected', 'danger', true);
-                    await removeVoter(props.election._id, user._id);
-                })
-            }
-            if (!success) {
-                showAlert('Already Voted', 'danger');
+            let verifySuccess = await verify();
+            if (verifySuccess) {
+                let success = await updateElection(props.election._id, user._id);
+                if (success) {
+                    transaction('Vote Transaction in Progress... Please Wait', 'success', false);
+                    const amount = { value: ethers.utils.parseEther("0.001") };
+                    await voting.contract.voteToElection(props.election.electionID, candidateId, amount).then(() => {
+                        transaction('Vote added successfully', 'success', true);
+                    }).catch(async (err) => {
+                        transaction('Transaction Rejected', 'danger', true);
+                        await removeVoter(props.election._id, user._id);
+                    })
+                }
+                if (!success) {
+                    showAlert('Already Voted', 'danger');
+                }
+            } else {
+                showAlert('Please use your own Metamask account', 'danger');
             }
         } else {
             showAlert('Please Connect to your Metamask Wallet', 'danger');

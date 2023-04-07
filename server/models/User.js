@@ -30,6 +30,10 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    metamaskAcc: {
+        type: String,
+        required: true,
+    },
     
 });
 

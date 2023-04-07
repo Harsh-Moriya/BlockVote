@@ -1,5 +1,6 @@
 import Context from "./UserContext";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import VotingContext from "../Voting Context/VotingContext";
 
 const UserStates = (props) => {
 
@@ -11,9 +12,11 @@ const UserStates = (props) => {
         branch: '',
         year: '',
         semester: '',
-        password: ''
+        password: '',
     })
     const [user, setUser] = useState('');
+    const votingContext = useContext(VotingContext);
+    const { account } = votingContext;
 
     // For Logging in the User
     const userLogin = async () => {
@@ -31,7 +34,6 @@ const UserStates = (props) => {
 
     // For Creating a new User
     const userRegistration = async () => {
-
         const response = await fetch("http://localhost:5000/api/auth/createuser", {
             method: 'POST',
             headers: {
@@ -44,7 +46,8 @@ const UserStates = (props) => {
                 branch: registrationCredentials.branch,
                 year: registrationCredentials.year,
                 semester: registrationCredentials.semester,
-                password: registrationCredentials.password
+                password: registrationCredentials.password,
+                metamaskAcc: account[0],
             })
         });
         const json = await response.json()
@@ -68,8 +71,25 @@ const UserStates = (props) => {
         return json.success
     }
 
+    // For verifying Metamask account
+    const verify = async ()=>{
+        const response = await fetch("http://localhost:5000/api/auth/verify", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                metamaskAcc: account[0],
+            })
+        });
+        const json = await response.json()
+
+        return json.success
+    }
+
     return (
-        <Context.Provider value={{ user, setUser, getUser, credentials, setCredentials, userLogin, registrationCredentials, setRegistrationCredentials, userRegistration }}>
+        <Context.Provider value={{ user, setUser, getUser, credentials, setCredentials, userLogin, registrationCredentials, setRegistrationCredentials, userRegistration, verify }}>
             {props.children}
         </Context.Provider>
     )

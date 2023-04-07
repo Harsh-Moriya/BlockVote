@@ -9,8 +9,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// JWT_SECRET = "BlockVote";
-
 // ROUTE 1: Create a User using: POST "/api/auth/createuser". No login required
 
 router.post('/createuser', [
@@ -21,21 +19,24 @@ router.post('/createuser', [
     body('year', 'Enter a valid Year').isString(),
     body('semester', 'Enter a valid Semester').isString(),
     body('password', 'Password must be atleast 5 characters').isLength({ min: 5 }),
+    body('metamaskAcc', 'Hash must be a string').isString(),
 ], async (req, res) => {
 
     let success = false;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        success = false
+        console.log(errors);
+        return res.status(400).json({ success, errors: errors.array() });
     }
 
     try {
         // Check whether the user with this email exists already
-        let user = await User.findOne({ email: req.body.email });
+        let user = await User.findOne({ collegeID: req.body.collegeID });
         if (user) {
             success = false
-            return res.status(400).json({ error: "Sorry a user with this email already exists" })
+            return res.status(400).json({ error: "Sorry a user with this collegeID already exists" })
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -50,6 +51,7 @@ router.post('/createuser', [
             year: req.body.year,
             semester: req.body.semester,
             password: secPass,
+            metamaskAcc: req.body.metamaskAcc,
         });
 
         const data = {
@@ -68,7 +70,7 @@ router.post('/createuser', [
     }
 })
 
-// ROUTE 1: Authenticate a User using: POST "/api/auth/login". No login required
+// ROUTE 2: Authenticate a User using: POST "/api/auth/login". No login required
 
 router.post('/login', [
     body('collegeID', 'Enter a valid College ID').isAlphanumeric(),
@@ -130,5 +132,30 @@ router.post('/getuser', fetchuser, async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 })
+
+// ROUTE 4: Verify a User's Metamask account using: POST "/api/auth/verify". login required
+
+router.post('/verify', fetchuser, async (req, res) => {
+    try {
+        let success = false;
+        let { metamaskAcc } = req.body;
+        let userId = req.user.id;
+        const user = await User.findById(userId);
+        if (!user) {
+            success = false;
+            return res.status(400).json({ error: "User not Found" });
+        }
+        if (user.metamaskAcc !== metamaskAcc) {
+            success = false
+            return res.status(400).json({ success, error: "Unrecognised Metamask account" });
+        }
+        success = true
+        res.send({ success })
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+
+});
 
 module.exports = router;

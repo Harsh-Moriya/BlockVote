@@ -60,9 +60,6 @@ function CreateElection() {
             }).catch((err)=>{
                 transaction('Transaction Refused', 'danger', true);
             })
-            // addElection(title, electionDescription, candidates);
-            // navigate('/elections')
-            // transaction('New Election Created', 'success', true);
 
         } else {
             showAlert('Please connect to your Metamask wallet', 'danger');
