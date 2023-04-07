@@ -4,6 +4,7 @@ import VotingContext from "../Voting Context/VotingContext";
 
 const UserStates = (props) => {
 
+    const host = "http://localhost:5000"
     const [credentials, setCredentials] = useState({ collegeID: "", password: "" });
     const [registrationCredentials, setRegistrationCredentials] = useState({
         name: '',
@@ -20,7 +21,7 @@ const UserStates = (props) => {
 
     // For Logging in the User
     const userLogin = async () => {
-        const response = await fetch("http://localhost:5000/api/auth/login", {
+        const response = await fetch(`${host}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -34,7 +35,7 @@ const UserStates = (props) => {
 
     // For Creating a new User
     const userRegistration = async () => {
-        const response = await fetch("http://localhost:5000/api/auth/createuser", {
+        const response = await fetch(`${host}/api/auth/createuser`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -58,7 +59,7 @@ const UserStates = (props) => {
 
     // For getting User info
     const getUser = async () => {
-        const response = await fetch("http://localhost:5000/api/auth/getuser", {
+        const response = await fetch(`${host}/api/auth/getuser`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +74,7 @@ const UserStates = (props) => {
 
     // For verifying Metamask account
     const verify = async ()=>{
-        const response = await fetch("http://localhost:5000/api/auth/verify", {
+        const response = await fetch(`${host}/api/auth/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
