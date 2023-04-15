@@ -54,8 +54,7 @@ function Profile(props) {
                 <h3 className="dep">Department: {user ? user.branch : 'branch'}</h3>
                 <h3 className="year">Year: {user ? user.year : 'year'}</h3>
                 <h3 className="sem">Semester: {user ? user.semester : 'semester'}</h3>
-                {props.results ? null : (account ? <button className="create" onClick={createElectionBtn} >Create Election</button> : <button className="create" onClick={handleConnect}>Connect Wallet</button>)}
-                {/* {props.results ? null : <Link to='/createelection'><button className="create">Create Election</button></Link>} */}
+                {props.results ? null : (account ? (user.isAdmin ? <button className="create" onClick={createElectionBtn} >Create Election</button> : null) : <button className="create" onClick={handleConnect}>Connect Wallet</button>)}
             </div>
         </div>
     )

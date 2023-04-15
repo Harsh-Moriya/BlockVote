@@ -73,7 +73,7 @@ const UserStates = (props) => {
     }
 
     // For verifying Metamask account
-    const verify = async ()=>{
+    const verify = async () => {
         const response = await fetch(`${host}/api/auth/verify`, {
             method: 'POST',
             headers: {
@@ -89,8 +89,40 @@ const UserStates = (props) => {
         return json.success
     }
 
+    // For verifying college IDs Metamask account
+    const verifyID = async () => {
+        const response = await fetch(`${host}/api/auth/verifyid`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                collegeID: registrationCredentials.collegeID,
+            })
+        });
+        const json = await response.json()
+
+        return json.success
+    }
+
+    // For verifying user using otp
+    const sendOTP = async (collegeID) => {
+        const response = await fetch(`${host}/api/auth/otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                collegeID: collegeID,
+            })
+        });
+        const otpObj = await response.json()
+
+        return otpObj
+    }
+
     return (
-        <Context.Provider value={{ user, setUser, getUser, credentials, setCredentials, userLogin, registrationCredentials, setRegistrationCredentials, userRegistration, verify }}>
+        <Context.Provider value={{ user, setUser, getUser, credentials, setCredentials, userLogin, registrationCredentials, setRegistrationCredentials, userRegistration, verify, verifyID, sendOTP }}>
             {props.children}
         </Context.Provider>
     )

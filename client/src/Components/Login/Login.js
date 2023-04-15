@@ -8,20 +8,34 @@ import UserContext from '../../Context/UserContext/UserContext';
 function Login() {
 
   const alertContext = useContext(AlertContext);
-  const { alert, showAlert } = alertContext;
-  const context = useContext(UserContext);
-  const { credentials, setCredentials, userLogin } = context;
-  // const [credentials, setCredentials] = useState({ collegeID: "", password: "" })
+  const { alert, showAlert, transaction } = alertContext;
+  const userContext = useContext(UserContext);
+  const { credentials, setCredentials, userLogin, sendOTP } = userContext;
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (window.ethereum) {
+      transaction('Login in progress... Please Wait', 'success', false);
+      // window.prompt("sometext");
       let json = await userLogin();
       if (json.success) {
-        localStorage.setItem('token', json.authtoken);
-        showAlert('logged in', 'success')
-        navigate("/elections");
+
+        let otpObj = await sendOTP(credentials.collegeID)
+
+        if (otpObj.success) {
+          let otp = window.prompt("Enter your OTP")
+          if (otp === otpObj.OTP) {
+            localStorage.setItem('token', json.authtoken);
+            showAlert('logged in', 'success')
+            navigate("/elections");
+          } else {
+            showAlert('Incorrect OTP', 'danger')
+          }
+        } else {
+          showAlert('Something went wrong', 'danger')
+        }
+
       } else {
         showAlert('Invalid Credentials', 'danger')
       }

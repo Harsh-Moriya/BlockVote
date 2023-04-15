@@ -11,18 +11,19 @@ function Registration() {
     const alertcontext = useContext(AlertContext);
     const { alert, showAlert, transaction } = alertcontext;
     const usercontext = useContext(UserContext);
-    const { registrationCredentials, setRegistrationCredentials, userRegistration } = usercontext;
+    const { registrationCredentials, setRegistrationCredentials, userRegistration, verifyID, sendOTP } = usercontext;
     const votingContext = useContext(VotingContext);
     const { account, connectWallet } = votingContext;
     const navigate = useNavigate();
 
     useEffect(() => {
-      if (!window.ethereum) {
-        navigate('/')
-      }
-      // eslint-disable-next-line
+        if (!window.ethereum) {
+            navigate('/')
+            showAlert('Please install Metamask wallet', 'danger')
+        }
+        // eslint-disable-next-line
     }, [])
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,15 +32,44 @@ function Registration() {
                 const pass = document.querySelector('#register-password');
                 const cPass = document.querySelector('#register-cPassword');
                 if (pass.value === cPass.value) {
-                    let success = userRegistration();
-                    if (success) {
-                        // Redirect
-                        navigate("/");
-                        showAlert('New User Created', 'success')
+                    let verifyIDSuccess = await verifyID();
+                    if (verifyIDSuccess) {
+
+                        let otpObj = await sendOTP(registrationCredentials.collegeID)
+
+                        if (otpObj.success) {
+                            let otp = window.prompt("Enter your OTP")
+                            if (otp === otpObj.OTP) {
+                                let success = await userRegistration();
+                                if (success) {
+                                    // Redirect
+                                    navigate("/");
+                                    showAlert('New User Created', 'success')
+                                }
+                                else {
+                                    showAlert('Unable to create user', 'danger')
+                                }
+                            } else {
+                                showAlert('Incorrect OTP', 'danger')
+                            }
+                        } else {
+                            showAlert('Something went wrong', 'danger')
+                        }
+
+                        // let success = await userRegistration();
+                        // if (success) {
+                        //     // Redirect
+                        //     navigate("/");
+                        //     showAlert('New User Created', 'success')
+                        // }
+                        // else {
+                        //     showAlert('Something went wrong', 'danger')
+                        // }
+
+                    } else {
+                        showAlert('Invalid College ID', 'danger')
                     }
-                    else {
-                        showAlert('Somethin went wrong', 'danger')
-                    }
+
                 } else {
                     showAlert('Passwords did not match', 'danger')
                 }
