@@ -18,6 +18,7 @@ mongoose.connect(process.env.URI, {
 }).catch((err)=> console.log(`${err} did not connect`))
 
 app.use('/api/auth', require('./routes/auth'));
+
 app.use('/api/elections', require('./routes/elections'));
 
 app.listen(PORT, ()=>{
