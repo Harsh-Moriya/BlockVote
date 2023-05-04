@@ -67,7 +67,7 @@ function Login() {
             <input type="text" id='collegeid' placeholder='Enter Your College ID' name='collegeID' onChange={onChange} required />
             <h4>Password</h4>
             <input type="password" id='password' placeholder='Enter Your Password' name='password' onChange={onChange} required />
-            <Link to='/'>Forgot Password ?</Link>
+            {/* <Link to='/'>Forgot Password ?</Link> */}
             <button className='btn-login'>Login</button>
             <h5>OR</h5>
             <Link to='/register' className='btn-registration'>Create Account</Link>

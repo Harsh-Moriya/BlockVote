@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import CreateElection from './Components/Create Election/CreateElection';
 import Elections from './Components/Elections/Elections';
 import Footer from './Components/Footer/Footer';

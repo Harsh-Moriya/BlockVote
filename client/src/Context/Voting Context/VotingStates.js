@@ -5,7 +5,7 @@ import ABI from '../../Contract/Voting.json';
 
 const VotingStates = (props) => {
 
-    const contractAddress = "0xd9Bdd719eeA3B5FE5306fC0467cC0547D007B811";
+    const contractAddress = "0x98446D36e13E81B3ceECD83cFe58D9A1A9Da4365";
     const contractABI = ABI.abi;
     const [voting, setVoting] = useState({
         provider: null,

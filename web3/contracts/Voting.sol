@@ -14,7 +14,13 @@ contract Voting {
         uint256[] votesInETH;
     }
 
+    constructor() {
+        owner = msg.sender;
+    }
+
     mapping(uint256 => Election) public elections;
+
+    address public owner;
     
     uint256 public numberOfElections = 0;
 
@@ -67,6 +73,11 @@ contract Voting {
 
         return allElections;
         
+    }
+
+    function destroy() public {
+        require(msg.sender == owner, "msg.sender is not the owner");
+        selfdestruct(payable(owner));
     }
 
 }
