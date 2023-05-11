@@ -75,9 +75,4 @@ contract Voting {
         
     }
 
-    function destroy() public {
-        require(msg.sender == owner, "msg.sender is not the owner");
-        selfdestruct(payable(owner));
-    }
-
 }
